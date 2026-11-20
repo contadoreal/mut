@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E1317">
+<meta name="description" content="Joias em ouro 18k escolhidas à mão, depois de mais de quarenta anos de ofício em família.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MUT">
+<meta property="og:title" content="MUT · Joias em ouro 18k">
+<meta property="og:description" content="Ouro 18k escolhido à mão, depois de mais de quarenta anos de ofício em família.">
+<meta property="og:image" content="https://contadoreal.github.io/mut/capa.jpg">
+<meta property="og:url" content="https://contadoreal.github.io/mut/">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="robots" content="noindex, nofollow">
+<title>MUT Joias</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap">
+<style>
+/* Concept: "akhet", the sun resting on the horizon. The page opens on a full-screen campaign photo; on the first scroll
+   the photo swells and fades, the MUT of the header descends to its place under the horizon and the sun rises from
+   the line: the scroll draws the logo.
+   Further down, photos open from the centre as they arrive and the gold names tighten into place.
+   Mobile first: one column of full-width photos; columns only from tablet up. */
+:root{
+  --night:#1E1317;      /* page ground, deeper than the velvet so the photos come forward */
+  --plum:#3D2B2E;       /* Chocolate Plum: bands and image wells */
+  --line:#563E43;       /* hairlines */
+  --popcorn:#F5DC96;    /* brand light */
+  --gold-1:#FFF1C4; --gold-2:#E9C46A; --gold-3:#A77B2F; /* metallic text ramp, derived from Popcorn */
+  --ivory:#EDE3CF;      /* running text */
+  --muted:#B5A497;      /* secondary text */
+  --lapis:#9BB7D4;      /* Cerulean: selected state only */
+  --display:"Cormorant Garamond", Garamond, "Times New Roman", serif;
+  --body:"Jost", "Avenir Next", "Futura", "Helvetica Neue", Arial, sans-serif;
+  --shine:0;            /* 0..1, driven by scroll: where the reflection sits on gold text */
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){ color-scheme:dark } }
+:root[data-theme="light"]{ color-scheme:dark }
+*{box-sizing:border-box}
+html,body{overflow-x:clip;max-width:100%}
+body{background:var(--night);color:var(--ivory);font-family:var(--body);font-weight:300;font-size:16px;line-height:1.65}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top, 0px);z-index:10;background:var(--night)}
+a{color:inherit}
+:focus-visible{outline:1px solid var(--popcorn);outline-offset:3px}
+.gutter{padding-left:max(20px, env(safe-area-inset-left, 0px));padding-right:max(20px, env(safe-area-inset-right, 0px))}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* gold text with a moving reflection */
+.gold{background:linear-gradient(100deg,var(--gold-3) 0%,var(--gold-2) 22%,var(--gold-1) 34%,var(--gold-2) 46%,var(--gold-3) 70%,var(--gold-2) 100%);
+  background-size:260% 100%;background-position:calc(100% - var(--shine) * 100%) 0;
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* header */
+header.top{position:sticky;top:env(safe-area-inset-top, 0px);z-index:5;transition:background .4s, border-color .4s;border-bottom:1px solid transparent}
+header.top.solid{background:color-mix(in srgb, var(--night) 88%, transparent);backdrop-filter:blur(8px);border-color:var(--line)}
+.top .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;padding-block:16px}
+.top .logo{grid-column:2}
+.logo svg.mk{transform:translateX(var(--ix,0px));will-change:transform}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--popcorn)}
+.logo svg{width:42px;flex:none}
+.logo .word{font-family:var(--display);font-weight:500;font-size:28px;letter-spacing:.42em;margin-right:-.42em;line-height:1;transition:opacity .25s}
+header.top.inhero .logo .word{opacity:0}
+header.top:not(.inhero) .logo svg.mk{transition:transform .35s ease}
+nav.links{display:none;gap:26px;grid-column:3;justify-self:end}
+nav.links a{text-decoration:none;font-size:14px;color:var(--ivory);opacity:.75}
+nav.links a:hover{opacity:1;color:var(--popcorn)}
+@media (min-width:720px){ nav.links{display:flex} }
+
+/* hero: the photo swells and fades, MUT descends, the sun rises from the line */
+.hero{position:relative;height:150svh;margin-top:-76px}
+.pin{position:sticky;top:0;height:100svh;overflow:hidden;width:100%}
+.stage{position:absolute;inset:0;overflow:hidden}
+.photo{position:absolute;inset:0;opacity:var(--ph,1);will-change:opacity,transform;transform:scale(var(--zoom,1))}
+.photo img{backface-visibility:hidden;width:100%;height:100%;object-fit:cover;object-position:50% 35%;display:block}
+.photo::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom, rgba(30,19,23,.45) 0%, rgba(30,19,23,0) 18%, rgba(30,19,23,0) 30%, rgba(30,19,23,.55) 52%, rgba(30,19,23,.85) 100%)}
+.sky{position:absolute;inset:0 0 auto;will-change:opacity;height:var(--hz,44%);background:radial-gradient(120% 90% at 50% 100%, rgba(245,220,150,.30) 0%, rgba(214,160,80,.12) 38%, rgba(30,19,23,0) 75%);opacity:var(--glow,0)}
+.sunbox{position:absolute;left:0;right:0;top:0;height:var(--hz,44%);overflow:hidden}
+.sun{position:absolute;left:50%;bottom:0;width:min(78vw,520px);aspect-ratio:1;border-radius:50%;
+  transform:translate(-50%, var(--sy,100%));will-change:transform;
+  background:radial-gradient(circle at 50% 55%, #FFF6D8 0%, #F5DC96 20%, #E2B85A 46%, #9C6B2A 70%, rgba(120,70,30,0) 71%)}
+.horizon{position:absolute;left:0;right:0;will-change:opacity;top:var(--hz,44%);bottom:0;background:var(--night);opacity:var(--band,0)}
+.line{position:absolute;left:0;right:0;top:var(--hz,44%);height:1px;background:color-mix(in srgb, var(--popcorn) 60%, transparent);transform:scaleX(var(--lx,0));transform-origin:50% 50%;will-change:transform}
+.mark{position:absolute;left:0;right:0;top:calc(var(--hz,44%) + 22px);font-family:var(--display);font-weight:300;font-size:clamp(88px,min(30vw,19svh),220px);
+  line-height:.8;letter-spacing:.18em;margin:0;text-align:center;padding-left:.18em;transform-origin:50% 50%;will-change:transform}
+.copy{position:absolute;left:0;right:0;top:0;display:flex;flex-direction:column;gap:16px;will-change:transform;
+  padding-left:max(20px, env(safe-area-inset-left, 0px));padding-right:max(20px, env(safe-area-inset-right, 0px))}
+.lede{font-family:var(--display);font-size:clamp(27px,7.4vw,42px);line-height:1.18;color:var(--ivory);text-align:center;margin:0 auto;max-width:22ch;font-weight:400;text-wrap:balance;
+  text-shadow:0 1px 2px rgba(20,10,12,.75), 0 2px 18px rgba(20,10,12,.65)}
+.hint{will-change:opacity;position:absolute;left:0;right:0;bottom:calc(30px + env(safe-area-inset-bottom, 0px));display:flex;flex-direction:column;align-items:center;gap:10px;
+  font-family:var(--display);font-style:italic;font-size:19px;letter-spacing:.04em;color:var(--ivory);opacity:var(--hint,1);pointer-events:none;text-shadow:0 1px 10px rgba(20,10,12,.7)}
+.hint span{animation:breathe 2.8s ease-in-out infinite}
+.hint i{display:block;width:1px;height:34px;background:linear-gradient(var(--popcorn),transparent);transform-origin:top;animation:drop 2.8s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes drop{0%{transform:scaleY(.2);opacity:0}40%{opacity:1}100%{transform:scaleY(1);opacity:0}}
+.note{text-align:center;color:var(--muted);font-size:16px;max-width:40ch;margin:0 auto;opacity:var(--nt,0);text-shadow:0 1px 10px rgba(20,10,12,.6)}
+
+/* collections band */
+.band{border-block:1px solid var(--line);background:var(--night)}
+.band .wrap{display:grid;grid-template-columns:repeat(3,1fr)}
+.band a{display:flex;align-items:center;justify-content:center;min-height:64px;text-decoration:none;font-family:var(--display);font-style:italic;font-size:clamp(20px,5.6vw,30px);color:var(--popcorn);text-align:center;line-height:1.1;padding-inline:6px}
+.band a + a{border-left:1px solid var(--line)}
+.band a:hover{background:color-mix(in srgb, var(--popcorn) 8%, transparent)}
+#femininas,#masculinas,#sob-medida{scroll-margin-top:70px}
+
+/* collections */
+.col-head{padding-block:56px 26px;display:flex;flex-direction:column;gap:8px}
+.col-head h2{font-family:var(--display);font-weight:300;font-size:clamp(44px,12vw,84px);line-height:.95;margin:0;transform:translateX(calc((1 - var(--open,1)) * 18vw))}
+.col-head p{margin:0;color:var(--muted);max-width:44ch}
+.grid{display:grid;grid-template-columns:1fr;gap:64px;padding-bottom:72px}
+@media (min-width:720px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:72px 32px} }
+@media (min-width:1100px){ .grid[data-group="m"]{grid-template-columns:repeat(3,minmax(0,1fr))} .grid[data-group="f"]{grid-template-columns:repeat(4,minmax(0,1fr));gap:72px 24px} }
+
+.piece{display:flex;flex-direction:column;gap:18px;min-width:0}
+.gal{position:relative;aspect-ratio:4/5;background:var(--plum);overflow:hidden;clip-path:inset(0 calc((1 - var(--open,1)) * 30%));
+  margin-inline:calc(-1 * max(20px, env(safe-area-inset-left, 0px)))}
+@media (min-width:720px){ .gal{margin-inline:0} }
+.gal .track{display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.gal .track::-webkit-scrollbar{display:none}
+.gal figure{flex:0 0 100%;height:100%;margin:0;overflow:hidden;scroll-snap-align:start}
+.gal img{width:100%;height:112%;object-fit:cover;display:block;transform:translateY(var(--py,-6%));will-change:transform}
+.gal .dots{position:absolute;left:0;right:0;bottom:14px;display:flex;justify-content:center;gap:8px;z-index:1}
+.gal .dots button{width:26px;height:2px;border:0;padding:0;background:var(--ivory);opacity:.35;cursor:pointer}
+.gal .dots button[aria-current="true"]{opacity:1;background:var(--popcorn)}
+.gal .count{position:absolute;right:14px;top:14px;font-size:12px;color:var(--ivory);opacity:.8;font-variant-numeric:tabular-nums;z-index:1}
+
+.meta{display:flex;flex-direction:column;gap:10px;min-width:0}
+.namerow{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.name{font-family:var(--display);font-size:clamp(44px,13vw,60px);font-weight:400;letter-spacing:calc(.08em + (1 - var(--open,1)) * .32em);text-transform:uppercase;line-height:.9}
+.grid[data-group="f"] .name{font-size:clamp(44px,13vw,52px)}
+.kind{font-family:var(--display);font-style:italic;font-size:22px;color:var(--muted)}
+.desc{margin:0;font-size:16px;color:var(--ivory);max-width:60ch}
+.specs{margin:4px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:auto 1fr;gap:4px 18px;font-size:14px}
+.specs dt{color:var(--muted)}
+.specs dd{margin:0;color:var(--ivory);font-variant-numeric:tabular-nums}
+.buy{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;padding-bottom:22px;border-bottom:1px solid var(--line)}
+.price{font-family:var(--display);font-size:28px;color:var(--popcorn);font-variant-numeric:tabular-nums;white-space:nowrap}
+.want{position:relative;overflow:hidden;font-family:var(--body);font-size:14px;font-weight:400;background:transparent;color:var(--popcorn);
+  border:1px solid color-mix(in srgb, var(--popcorn) 70%, transparent);padding:13px 18px;cursor:pointer;min-height:48px;transition:color .3s,border-color .3s,background .3s}
+.want:hover{background:color-mix(in srgb, var(--popcorn) 12%, transparent)}
+.want[aria-pressed="true"]{border-color:var(--lapis);color:var(--lapis)}
+.want .tick{display:inline-block;width:0;overflow:hidden;vertical-align:-1px;transition:width .3s}
+.want[aria-pressed="true"] .tick{width:1.1em}
+
+/* bespoke */
+.bespoke{position:relative;background:var(--plum);overflow:hidden;padding-block:72px}
+.bespoke .sun-small{position:absolute;right:-60px;top:-60px;width:220px;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle, rgba(245,220,150,.35), rgba(245,220,150,0) 65%);transform:translateY(var(--by,0px))}
+.bespoke .inner{position:relative;display:grid;gap:22px}
+.bespoke h2{font-family:var(--display);font-weight:300;font-size:clamp(40px,11vw,72px);line-height:1;margin:0;text-wrap:balance}
+.bespoke p{margin:0;max-width:56ch}
+.bespoke ul{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:1fr;border-top:1px solid var(--line)}
+.bespoke li{border-bottom:1px solid var(--line);padding-block:14px;font-family:var(--display);font-size:24px;display:flex;justify-content:space-between;gap:12px}
+.bespoke li span{font-family:var(--body);font-size:14px;color:var(--muted);align-self:center;text-align:right}
+.cta{display:flex;align-items:center;justify-content:center;min-height:52px;text-decoration:none;font-size:15px;background:var(--popcorn);color:var(--night);padding:14px 22px;font-weight:400}
+@media (min-width:900px){ .bespoke .inner{grid-template-columns:1fr 1fr;gap:56px;align-items:start} .cta{justify-self:start} }
+
+footer{padding-block:56px 140px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;color:var(--muted);font-size:14px}
+footer .logo svg{width:40px} footer .logo .word{font-size:26px}
+
+/* interest bar */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--popcorn);color:var(--night);transform:translateY(0);transition:transform .45s cubic-bezier(.2,.7,.1,1);
+  padding:12px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px))}
+.bar.off{transform:translateY(110%)}
+.bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.bar .sum{font-size:14px;min-width:0;line-height:1.3}
+.bar .sum b{font-weight:500}
+.bar .sum span{display:block;font-size:12px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar a{text-decoration:none;font-size:14px;background:var(--night);color:var(--popcorn);padding:13px 16px;white-space:nowrap;min-height:48px;display:flex;align-items:center}
+
+
+/* Opening scene driven by the browser's own scroll timeline (runs on the graphics chip, never waits for JS).
+   JS only measures the start/end positions once and hands them over as custom properties. */
+.sda .hero .photo,.sda .hero .horizon,.sda .hero .line,.sda .hero .sun,.sda .hero .sky,.sda .hero .note,.sda .hero .hint,.sda .hero .mark,.sda .hero .copy{
+  animation-timeline:scroll(root block);animation-range:0px var(--span,50svh);animation-fill-mode:both;animation-duration:1ms;animation-timing-function:linear}
+.sda .hero .photo{animation-name:k-photo}
+.sda .hero .horizon{animation-name:k-horizon}
+.sda .hero .line{animation-name:k-line}
+.sda .hero .sun{animation-name:k-sun}
+.sda .hero .sky{animation-name:k-sky}
+.sda .hero .note{animation-name:k-note}
+.sda .hero .hint{animation-name:k-hint}
+.sda .hero .mark{animation-name:k-mark}
+.sda .hero .copy{animation-name:k-copy}
+@keyframes k-photo{0%{transform:scale(1);opacity:1;animation-timing-function:ease-in-out}60%{opacity:0}100%{transform:scale(1.35);opacity:0}}
+@keyframes k-horizon{0%{opacity:0}50%,100%{opacity:1}}
+@keyframes k-line{0%,10%{transform:scaleX(0);animation-timing-function:cubic-bezier(.2,.7,.3,1)}50%,100%{transform:scaleX(1)}}
+@keyframes k-sun{0%,35%{transform:translate3d(-50%,100%,0);animation-timing-function:cubic-bezier(.2,.7,.3,1)}100%{transform:translate3d(-50%,46%,0)}}
+@keyframes k-sky{0%,35%{opacity:0;animation-timing-function:cubic-bezier(.2,.7,.3,1)}100%{opacity:1}}
+@keyframes k-note{0%,70%{opacity:0}100%{opacity:1}}
+@keyframes k-hint{0%{opacity:1}15%,100%{opacity:0}}
+@keyframes k-mark{0%{transform:translate3d(var(--mx),var(--my),0) scale(var(--ms));animation-timing-function:cubic-bezier(.2,.7,.3,1)}85%,100%{transform:none}}
+@keyframes k-copy{0%{transform:translate3d(0,var(--c0),0);animation-timing-function:cubic-bezier(.2,.7,.3,1)}85%,100%{transform:translate3d(0,var(--c1),0)}}
+@media (prefers-reduced-motion: reduce){
+  .hint span,.hint i{animation:none}
+  .gal img{transform:none;height:100%} .gal{clip-path:none} .col-head h2{transform:none}
+}
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="akhet" viewBox="0 0 48 28">
+      <circle cx="24" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M2 26 C8 26 10 18 16 18 L20 20 M28 20 L32 18 C38 18 40 26 46 26" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="2" y1="26.3" x2="46" y2="26.3" stroke="currentColor" stroke-width="1.4"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="top gutter" id="top">
+  <div class="wrap">
+    <a class="logo" href="#inicio" aria-label="MUT, início"><svg class="mk" viewBox="0 0 48 28"><use href="#akhet"/></svg><span class="word">MUT</span></a>
+    <nav class="links" aria-label="Seções">
+      <a href="#femininas">Femininas</a>
+      <a href="#masculinas">Masculinas</a>
+      <a href="#sob-medida">Sob medida</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="inicio" aria-label="MUT">
+  <div class="pin" id="pin">
+    <div class="stage" aria-hidden="true">
+      <div class="photo"><img src="ib-3.jpg" alt="" width="960" height="1204" fetchpriority="high"></div>
+      <div class="sky"></div>
+      <div class="sunbox"><div class="sun"></div></div>
+      <div class="horizon"></div>
+      <div class="line"></div>
+    </div>
+    <h1 class="mark gold" id="mark">MUT</h1>
+    <div class="hint" aria-hidden="true"><span>Deslize para descobrir</span><i></i></div>
+    <div class="copy" id="copy">
+      <p class="lede">Ouro 18k escolhido à mão, depois de mais de quarenta anos de ofício em família.</p>
+      <p class="note">Estas são as primeiras peças do nosso acervo.<br>Há muitas outras, e elas chegam aqui aos poucos.</p>
+    </div>
+  </div>
+</section>
+
+<nav class="band gutter" aria-label="Coleções"><div class="wrap"><a href="#femininas">Femininas</a><a href="#masculinas">Masculinas</a><a href="#sob-medida">Sob medida</a></div></nav>
+
+<main class="gutter">
+  <div class="wrap">
+    <section aria-labelledby="h-fem">
+      <div class="col-head" id="femininas">
+        <h2 id="h-fem" class="gold">Femininas</h2>
+        <p>Colares em ouro 18k amarelo, do traço quase invisível à presença escultural.</p>
+      </div>
+      <div class="grid" data-group="f"></div>
+    </section>
+    <section aria-labelledby="h-masc">
+      <div class="col-head" id="masculinas">
+        <h2 id="h-masc" class="gold">Masculinas</h2>
+        <p>Elos clássicos em proporção masculina.<br>Colar e pulseira do mesmo nome formam um par.</p>
+      </div>
+      <div class="grid" data-group="m"></div>
+    </section>
+  </div>
+</main>
+
+<section class="bespoke gutter" id="sob-medida" aria-labelledby="h-bes">
+  <div class="sun-small" id="bsun" aria-hidden="true"></div>
+  <div class="wrap inner">
+    <div style="display:grid;gap:18px">
+      <h2 id="h-bes" class="gold">Sob medida</h2>
+      <p>Não encontrou o que procura?<br>Trabalhamos há décadas com ourives de confiança.<br>Buscamos a peça no nosso acervo ou criamos do zero com você.</p>
+    </div>
+    <div style="display:grid;gap:24px">
+      <ul>
+        <li>Brincos <span>argolas, pontos de luz</span></li>
+        <li>Colares com nome <span>nomes e iniciais</span></li>
+        <li>Pulseiras <span>tornozeleiras também</span></li>
+        <li>Anéis e alianças <span>sob medida</span></li>
+        <li>Peças de família <span>releitura e reforma</span></li>
+      </ul>
+      <a class="cta" id="cta-bespoke" target="_blank" rel="noopener" href="#">Conversar no WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<footer class="gutter">
+  <a class="logo" href="#inicio" aria-label="MUT, início" style="flex-direction:column;gap:12px"><svg viewBox="0 0 48 28"><use href="#akhet"/></svg><span class="word">MUT</span></a>
+  <div>Ouro 18k amarelo</div>
+</footer>
+
+<div class="bar off" id="bar" aria-live="polite">
+  <div class="wrap">
+    <div class="sum"><b id="bar-count"></b> · <b id="bar-total"></b><span id="bar-names"></span></div>
+    <a id="bar-send" target="_blank" rel="noopener" href="#">Enviar pelo WhatsApp</a>
+  </div>
+</div>
+
+<script>
+const PHONE = "5515996545999";
+const PIECES = [
+  {id:"maat", g:"f", name:"Maat", kind:"colar", imgs:3, order:[2,1,3], price:9000,
+   desc:"Maat é a deusa do equilíbrio. Dois fios de ouro correm lado a lado, em perfeita simetria, e formam um losango aberto que capta a luz em cada movimento. Uma peça de presença serena, para o dia a dia e para as grandes ocasiões.",
+   specs:[["Comprimento","45 cm"],["Largura","3,2 mm"]]},
+  {id:"ib", g:"f", name:"Ib", kind:"colar", imgs:3, order:[3,1,2], price:6105,
+   desc:"Ib é a palavra egípcia para coração, a morada da alma. Corações vazados em ouro polido pendem um a um de uma corrente fina, em intervalos precisos. Leve e luminoso, um colar que fala baixo e é lembrado.",
+   specs:[["Comprimento","c. 40 cm"],["Corações","6,4 mm"],["Corrente","1,4 mm"]]},
+  {id:"sopdet", g:"f", name:"Sopdet", kind:"colar", imgs:2, order:[2,1], price:3060,
+   desc:"Sopdet é a estrela que anunciava a cheia do Nilo. Esferas de ouro polido pontuam uma corrente quase invisível, como pontos de luz sobre a pele. Delicadeza absoluta, para usar sozinho ou em camadas.",
+   specs:[["Comprimento","c. 48 cm"],["Esferas","2 mm"],["Corrente","0,45 mm"]]},
+  {id:"khepri", g:"f", name:"Khepri", kind:"colar", imgs:2, order:[2,1], price:8067.6,
+   desc:"Khepri é o sol nascente, a esfera que renasce a cada manhã. Três esferas maiores marcam o centro e os lados, entre pequenas esferas que seguem o caimento. Um colar longo e escultural, de brilho contínuo.",
+   specs:[["Comprimento","c. 62 cm"],["Esferas","6,8 e 3,1 mm"],["Corrente","1 mm"]]},
+  {id:"hapi-colar", g:"m", name:"Hapi", kind:"colar", imgs:3, order:[2,1,3], price:5200,
+   desc:"Hapi é o espírito da cheia do Nilo, o ritmo que traz a abundância. O elo fígaro alterna três elos curtos e um longo, numa cadência clássica e firme. Uma peça masculina essencial, de linhas limpas.",
+   specs:[["Comprimento","60 cm"],["Largura","2,6 mm"]]},
+  {id:"hapi-pulseira", g:"m", name:"Hapi", kind:"pulseira", imgs:1, price:7475,
+   desc:"O mesmo ritmo do colar Hapi, em escala mais marcante: um elo longo e polido seguido de elos curtos. Presença e conforto para o pulso masculino.",
+   specs:[["Comprimento","21 cm"],["Largura","4,8 mm"]]},
+  {id:"shu-colar", g:"m", name:"Shu", kind:"colar", imgs:3, order:[2,1,3], price:6649.5,
+   desc:"Shu é o deus do ar e da luz que separa o céu da terra. Elos retangulares alongados, abertos e idênticos, desenham uma linha leve e arquitetônica. Contemporâneo e atemporal ao mesmo tempo.",
+   specs:[["Comprimento","60 cm"],["Largura","2,4 mm"]]},
+  {id:"shu-pulseira", g:"m", name:"Shu", kind:"pulseira", imgs:2, price:3900,
+   desc:"A arquitetura aberta do colar Shu levada ao pulso. Elos alongados de ouro polido, discretos e precisos.",
+   specs:[["Comprimento","21 cm"],["Largura","2,9 mm"]]},
+  {id:"ptah-colar", g:"m", name:"Ptah", kind:"colar", imgs:2, order:[2,1], price:13770,
+   desc:"Ptah é o deus dos artesãos e construtores. Elos ovais com barra central, alternando frente e perfil, lembram a precisão de uma peça feita à mão. Robusto, com acabamento de alta joalheria.",
+   specs:[["Comprimento","60 cm"],["Largura","2,3 mm"]]}
+];
+const brl = v => "R$ " + v.toLocaleString("pt-BR", {minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2});
+const wa = text => "https://wa.me/" + PHONE + "?text=" + encodeURIComponent(text);
+const cap = s => s[0].toUpperCase() + s.slice(1);
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+let picked = new Set();
+try { JSON.parse(localStorage.getItem("mut-interesse") || "[]").forEach(id => picked.add(id)); } catch (e) {}
+const save = () => { try { localStorage.setItem("mut-interesse", JSON.stringify([...picked])); } catch (e) {} };
+
+function card(p){
+  const el = document.createElement("article");
+  el.className = "piece";
+  const ord = p.order || Array.from({length:p.imgs}, (_, i) => i + 1);
+  const figs = ord.map((n, i) =>
+    `<figure><img src="${p.id}-${n}.jpg" alt="${cap(p.kind)} ${p.name} em ouro 18k, foto ${i+1} de ${p.imgs}" loading="${i ? "lazy" : "eager"}" width="960" height="1204"></figure>`).join("");
+  const dots = p.imgs > 1 ? `<div class="dots">${Array.from({length:p.imgs}, (_, i) => `<button type="button" aria-label="Ver foto ${i+1}" aria-current="${i===0}"></button>`).join("")}</div>` : "";
+  el.innerHTML = `
+    <div class="gal"><div class="track">${figs}</div>${dots}</div>
+    <div class="meta">
+      <div class="namerow"><span class="name gold">${p.name}</span><span class="kind">${p.kind}</span></div>
+      <p class="desc">${p.desc.replace(/([.?!])\s+/g, "$1<br>")}</p>
+      <dl class="specs"><dt>Metal</dt><dd>Ouro 18k amarelo</dd>${p.specs.map(s => `<dt>${s[0]}</dt><dd>${s[1]}</dd>`).join("")}</dl>
+      <div class="buy"><span class="price">${brl(p.price)}</span>
+        <button type="button" class="want" id="want-${p.id}" aria-pressed="${picked.has(p.id)}"><span class="tick">✓</span><span class="lbl">${picked.has(p.id) ? "Na sua lista" : "Tenho interesse"}</span></button></div>
+    </div>`;
+  const track = el.querySelector(".track"), ds = el.querySelectorAll(".dots button");
+  ds.forEach((d, i) => d.addEventListener("click", () => track.scrollTo({left: i * track.clientWidth, behavior: reduce ? "auto" : "smooth"})));
+  track.addEventListener("scroll", () => {
+    const i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+    ds.forEach((d, j) => d.setAttribute("aria-current", String(i === j)));
+  }, {passive:true});
+  el.querySelector(".want").addEventListener("click", e => {
+    const b = e.currentTarget;
+    picked.has(p.id) ? picked.delete(p.id) : picked.add(p.id);
+    const on = picked.has(p.id);
+    b.setAttribute("aria-pressed", String(on));
+    b.querySelector(".lbl").textContent = on ? "Na sua lista" : "Tenho interesse";
+    save(); updateBar();
+  });
+  return el;
+}
+document.querySelectorAll(".grid").forEach(g => PIECES.filter(p => p.g === g.dataset.group).forEach(p => g.appendChild(card(p))));
+
+
+function updateBar(){
+  const list = PIECES.filter(p => picked.has(p.id));
+  const bar = document.getElementById("bar");
+  bar.classList.toggle("off", list.length === 0);
+  if (!list.length) return;
+  const total = list.reduce((s, p) => s + p.price, 0);
+  document.getElementById("bar-count").textContent = list.length + (list.length > 1 ? " peças" : " peça");
+  document.getElementById("bar-total").textContent = brl(total);
+  document.getElementById("bar-names").textContent = list.map(p => cap(p.kind) + " " + p.name).join(", ");
+  const msg = "Olá! Vi o catálogo da MUT e tenho interesse em:\n" +
+    list.map(p => "• " + cap(p.kind) + " " + p.name + " (" + brl(p.price) + ")").join("\n") +
+    "\n\nTotal: " + brl(total);
+  document.getElementById("bar-send").href = wa(msg);
+}
+updateBar();
+document.getElementById("cta-bespoke").href = wa("Olá! Vi o catálogo da MUT e queria conversar sobre uma peça sob medida.");
+
+
+/* scroll scene: photo swells and fades, MUT descends from the header, the sun rises from the line.
+   Rendering follows a smoothed copy of the scroll position (eased toward it every animation frame),
+   and all positions are cached, so each frame only writes transforms and custom properties. */
+const root = document.documentElement, header = document.getElementById("top"), bsun = document.getElementById("bsun");
+const hero = document.getElementById("inicio"), pin = document.getElementById("pin");
+const mark = document.getElementById("mark"), copy = document.getElementById("copy"), hword = header.querySelector(".word");
+const hicon = header.querySelector("svg.mk");
+const pieces = [...document.querySelectorAll(".piece")].map(el => ({el, g: el.querySelector(".gal"), imgs: [...el.querySelectorAll(".gal img")]}));
+const heads = [...document.querySelectorAll(".col-head")];
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const ease = t => 1 - Math.pow(1 - t, 3);
+const inout = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const absTop = el => el.getBoundingClientRect().top + scrollY;
+let geo = null;
+const useCSS = !reduce && !!(window.CSS && CSS.supports && CSS.supports("animation-timeline: scroll()"));
+function measure(){
+  root.classList.remove("sda");
+  mark.style.transform = "none"; copy.style.transform = "none"; hicon.style.transform = "none";
+  const m = mark.getBoundingClientRect(), w = hword.getBoundingClientRect(), ic = hicon.getBoundingClientRect(), pr = pin.getBoundingClientRect();
+  const vh = innerHeight;
+  geo = {
+    vh, span: Math.max(1, hero.offsetHeight - vh), max: Math.max(1, root.scrollHeight - vh),
+    dx: (w.left + w.width / 2) - (m.left + m.width / 2),
+    dy: (w.top + w.height / 2) - (m.top + m.height / 2),
+    s0: w.height / Math.max(1, m.height),
+    ix: innerWidth / 2 - (ic.left + ic.width / 2),
+    copyStart: pin.clientHeight * 0.295,
+    copyEnd: (m.bottom - pr.top) + 22,
+    markBottom: m.bottom - pr.top,
+    pieces: pieces.map(p => absTop(p.g)), gh: pieces.length ? pieces[0].g.offsetHeight : 0,
+    heads: heads.map(absTop),
+    bs: absTop(bsun.parentElement), bh: bsun.parentElement.offsetHeight
+  };
+  if (useCSS){
+    root.style.setProperty("--span", geo.span + "px");
+    mark.style.setProperty("--mx", geo.dx.toFixed(2) + "px"); mark.style.setProperty("--my", geo.dy.toFixed(2) + "px");
+    mark.style.setProperty("--ms", geo.s0.toFixed(4));
+    copy.style.setProperty("--c0", geo.copyStart.toFixed(2) + "px"); copy.style.setProperty("--c1", geo.copyEnd.toFixed(2) + "px");
+    root.classList.add("sda");
+  }
+}
+const H = { photo: pin.querySelector(".photo"), horizon: pin.querySelector(".horizon"), line: pin.querySelector(".line"),
+  sun: pin.querySelector(".sun"), sky: pin.querySelector(".sky"), glow: pin.querySelector(".sun"), note: pin.querySelector(".note"), hint: pin.querySelector(".hint") };
+function render(y){
+  if (!geo) measure();
+  const {vh, span} = geo;
+  // the gold reflection repaints text, so it only moves once the opening scene is over
+  if (y > span) root.style.setProperty("--shine", ((y - span) / Math.max(1, geo.max - span)).toFixed(3));
+  const t = reduce ? 1 : clamp(y / span), e = inout(t);
+  if (useCSS || (t >= 1 && geo.done)) { /* the browser animates the scene itself, or it is at rest */ }
+  else {
+    geo.done = t >= 1;
+    H.photo.style.transform = `scale(${(1 + 0.35 * e).toFixed(4)})`;
+    H.photo.style.opacity = (1 - clamp(t / 0.6)).toFixed(3);
+    H.horizon.style.opacity = clamp(t / 0.5).toFixed(3);
+    H.line.style.transform = `scaleX(${ease(clamp((t - 0.1) / 0.4)).toFixed(4)})`;
+    const sunT = ease(clamp((t - 0.35) / 0.65));
+    H.sun.style.transform = `translate3d(-50%, ${(100 - 54 * sunT).toFixed(3)}%, 0)`;
+    H.sky.style.opacity = sunT.toFixed(3); H.glow.style.setProperty("--glow", sunT.toFixed(3));
+    H.note.style.opacity = clamp((t - 0.7) / 0.3).toFixed(3);
+    H.hint.style.opacity = (1 - clamp(t / 0.15)).toFixed(3);
+  }
+  const mt = ease(clamp(t / 0.85)), sc = geo.s0 + (1 - geo.s0) * mt;
+  if (!useCSS){
+    mark.style.transform = `translate3d(${(geo.dx * (1 - mt)).toFixed(2)}px, ${(geo.dy * (1 - mt)).toFixed(2)}px, 0) scale(${sc.toFixed(4)})`;
+    copy.style.transform = `translate3d(0, ${(geo.copyStart + (geo.copyEnd - geo.copyStart) * mt).toFixed(2)}px, 0)`;
+  }
+  // header: icon slides to the centre while MUT travels; the word returns once the big MUT has left the screen
+  const markGone = y > span + geo.markBottom - header.offsetHeight;
+  header.classList.toggle("inhero", !markGone);
+  header.classList.toggle("solid", y > span);
+  hicon.style.transform = `translate3d(${markGone ? 0 : (geo.ix * clamp(mt * 1.4)).toFixed(2)}px, 0, 0)`;
+  if (reduce) return;
+  pieces.forEach((p, i) => {
+    const top = geo.pieces[i] - y;
+    if (top > vh * 1.1 || top < -geo.gh) return;
+    { const k = clamp((vh - top) / (vh * 0.95)); p.el.style.setProperty("--open", (k * k * (3 - 2 * k)).toFixed(3)); }
+    const c = (top + geo.gh / 2 - vh / 2) / vh;
+    const py = (-6 + c * 6).toFixed(2) + "%";
+    p.imgs.forEach(im => im.style.setProperty("--py", py));
+  });
+  heads.forEach((h, i) => {
+    const top = geo.heads[i] - y;
+    if (top > vh * 1.1 || top < -vh) return;
+    h.style.setProperty("--open", ease(clamp((vh - top) / (vh * 0.45))).toFixed(3));
+  });
+  const bt = geo.bs - y;
+  if (bt < vh && bt + geo.bh > 0) bsun.style.setProperty("--by", ((vh - bt) * .25).toFixed(1) + "px");
+}
+let queued = false;
+function kick(){ if (!queued){ queued = true; requestAnimationFrame(() => { queued = false; render(scrollY); }); } }
+addEventListener("scroll", kick, {passive:true});
+addEventListener("resize", () => { geo = null; render(scrollY); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { geo = null; render(scrollY); });
+addEventListener("load", () => { geo = null; render(scrollY); });
+document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener("click", ev => {
+  const id = a.getAttribute("href").slice(1), el = id && document.getElementById(id);
+  if (!el) return;
+  ev.preventDefault();
+  const to = id === "inicio" ? 0 : el.getBoundingClientRect().top + scrollY - (header.offsetHeight + 8);
+  if (reduce){ scrollTo(0, to); return; }
+  const from = scrollY, dist = to - from, dur = Math.min(1800, 700 + Math.abs(dist) * 0.35), t0 = performance.now();
+  const step = now => { const k = clamp((now - t0) / dur); scrollTo(0, from + dist * inout(k)); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}));
+render(scrollY);
+</script>
+
+</body>
+</html>
